@@ -107,7 +107,10 @@ func Parse(data []byte) ([]StationMeasurement, error) {
 		return nil, fmt.Errorf("input does not match header line requirements: %s", lines[0])
 	}
 
-	timeLocation, _ := time.LoadLocation(timeZone)
+	timeLocation, err := time.LoadLocation(timeZone)
+	if err != nil {
+		return nil, err
+	}
 
 	measurements := []StationMeasurement{}
 
