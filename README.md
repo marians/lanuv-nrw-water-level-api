@@ -1,3 +1,5 @@
+[![Docker Repository on Quay](https://quay.io/repository/marian/lanuv-nrw-water-level-api/status "Docker Repository on Quay")](https://quay.io/repository/marian/lanuv-nrw-water-level-api)
+
 A little proxy service for water level data presented by [HYGON](https://luadb.lds.nrw.de/LUA/hygon/pegel.php?rohdaten=ja) of [LANUV NRW](https://www.lanuv.nrw.de/).
 
 To run the service in development:
