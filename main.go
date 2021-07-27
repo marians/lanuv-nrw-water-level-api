@@ -11,6 +11,7 @@ import (
 
 func main() {
 	var dataByStation map[string]waterlevel.Measurement
+	var stations []string
 
 	go func() {
 		for {
@@ -29,6 +30,11 @@ func main() {
 				log.Println(err)
 			}
 
+			for k := range dataByStation {
+				stations = append(stations, k)
+			}
+			sort.Strings(stations)
+
 			last := dataParsed[len(dataParsed)-1]
 			log.Printf("Number of datasets fetched: %d", len(dataParsed))
 			log.Printf("Last dataset: %s %s %v", last.StationName, last.Time, *last.Value)
@@ -37,13 +43,6 @@ func main() {
 
 		}
 	}()
-
-	stations := []string{}
-	for k := range dataByStation {
-		stations = append(stations, k)
-	}
-
-	sort.Strings(stations)
 
 	router := gin.Default()
 
