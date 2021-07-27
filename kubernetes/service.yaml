@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: lanuv-nrw-water-level-api
+  name: lanuv-nrw-water-level-api
+  namespace: marian
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+    name: http
+  selector:
+    app: lanuv-nrw-water-level-api
+  type: ClusterIP

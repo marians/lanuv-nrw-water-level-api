@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: lanuv-nrw-water-level-api
+  name: lanuv-nrw-water-level-api
+  namespace: marian
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lanuv-nrw-water-level-api
+  template:
+    metadata:
+      labels:
+        app: lanuv-nrw-water-level-api
+    spec:
+      containers:
+      - image: quay.io/marian/lanuv-nrw-water-level-api:latest
+        name: lanuv-nrw-water-level-api
+        resources:
+          requests:
+            cpu: 100m
+            memory: 50M
+          limits:
+            cpu: 100m
+            memory: 100M

@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    app: lanuv-nrw-water-level-api
+  name: lanuv-nrw-water-level-api
+  namespace: marian
+spec:
+  rules:
+  - host: waterlevel.5jka7.k8s.gollum.westeurope.azure.gigantic.io
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: lanuv-nrw-water-level-api
+            port:
+              name: http
