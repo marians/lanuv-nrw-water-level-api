@@ -30,8 +30,8 @@ func main() {
 			}
 
 			last := dataParsed[len(dataParsed)-1]
-			log.Printf("Number of datasets: %d", len(dataParsed))
-			log.Printf("Last dataset: %s %s %v", last.StationName, last.Time, last.Value)
+			log.Printf("Number of datasets fetched: %d", len(dataParsed))
+			log.Printf("Last dataset: %s %s %v", last.StationName, last.Time, *last.Value)
 
 			time.Sleep(5 * time.Minute)
 
