@@ -17,6 +17,7 @@ spec:
     spec:
       containers:
       - image: quay.io/marian/lanuv-nrw-water-level-api:latest
+        imagePullPolicy: Always
         name: lanuv-nrw-water-level-api
         resources:
           requests:
