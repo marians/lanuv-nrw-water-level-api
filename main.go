@@ -12,32 +12,39 @@ import (
 func main() {
 	var dataByStation map[string]waterlevel.Measurement
 	var stations []string
+	var lastModified string
 
 	go func() {
 		for {
-			dataRaw, err := waterlevel.Fetch()
-			if err != nil {
-				log.Println(err)
-			}
+			dataRaw, newLastModified, fetchErr := waterlevel.Fetch(lastModified)
+			if fetchErr != nil {
+				if fetchErr.Error() != "not modified" {
+					log.Println(fetchErr)
+				}
+			} else {
 
-			dataParsed, err := waterlevel.Parse(dataRaw)
-			if err != nil {
-				log.Println(err)
-			}
+				dataParsed, err := waterlevel.Parse(dataRaw)
+				if err != nil {
+					log.Println(err)
+				} else {
+					dataByStation, err = waterlevel.ParseByLocation(dataParsed)
+					if err != nil {
+						log.Println(err)
+					} else {
 
-			dataByStation, err = waterlevel.ParseByLocation(dataParsed)
-			if err != nil {
-				log.Println(err)
-			}
+						for k := range dataByStation {
+							stations = append(stations, k)
+						}
+						sort.Strings(stations)
 
-			for k := range dataByStation {
-				stations = append(stations, k)
-			}
-			sort.Strings(stations)
+						log.Printf("Fetched %d datasets published %s", len(dataParsed), newLastModified)
 
-			last := dataParsed[len(dataParsed)-1]
-			log.Printf("Number of datasets fetched: %d", len(dataParsed))
-			log.Printf("Last dataset: %s %s %v", last.StationName, last.Time, *last.Value)
+						if newLastModified != "" {
+							lastModified = newLastModified
+						}
+					}
+				}
+			}
 
 			time.Sleep(5 * time.Minute)
 

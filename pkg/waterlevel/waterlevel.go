@@ -50,28 +50,45 @@ type Measurement struct {
 	Value *float32
 }
 
-// Get raw data
-func Fetch() ([]byte, error) {
-	res, err := http.Get(url)
+// Get raw data and the lastModified date.
+func Fetch(lastModified string) ([]byte, string, error) {
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return nil, err
+		return nil, "", err
+	}
+
+	if lastModified != "" {
+		req.Header.Set("If-Modified-Since", lastModified)
+	}
+
+	res, err := client.Do(req)
+	if err != nil {
+		return nil, "", err
+	}
+
+	if res.StatusCode == http.StatusNotModified {
+		return nil, "", fmt.Errorf("not modified")
 	}
 
 	contentCompressed, err := io.ReadAll(res.Body)
 	defer res.Body.Close()
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
+
+	newLastModified := res.Header.Get("Last-Modified")
 
 	reader := bytes.NewReader(contentCompressed)
 	gzipReader, err := gzip.NewReader(reader)
 	if err != nil {
-		return nil, err
+		return nil, newLastModified, err
 	}
 
 	tarFile, err := ioutil.ReadAll(gzipReader)
 	if err != nil {
-		return nil, err
+		return nil, newLastModified, err
 	}
 
 	var data []byte
@@ -83,7 +100,7 @@ func Fetch() ([]byte, error) {
 		if err == io.EOF {
 			break // End of archive
 		} else if err != nil {
-			return nil, err
+			return nil, newLastModified, err
 		}
 
 		if hdr.Name != fileName {
@@ -92,11 +109,11 @@ func Fetch() ([]byte, error) {
 
 		data, err = ioutil.ReadAll(tr)
 		if err != nil {
-			return nil, err
+			return nil, newLastModified, err
 		}
 	}
 
-	return data, nil
+	return data, newLastModified, nil
 }
 
 func Parse(data []byte) ([]StationMeasurement, error) {
